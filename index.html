@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer Components - Презентация</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden;
+        }
+        .slide { 
+            min-height: 100vh; 
+            display: none; 
+            position: relative;
+            overflow: hidden;
+        }
+        .slide.active { 
+            display: flex; 
+            animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .gradient-bg { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
+            position: relative;
+        }
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 100, 200, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+        }
+        .glass-effect { 
+            backdrop-filter: blur(20px); 
+            background: rgba(255, 255, 255, 0.15); 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .animate-fade-in { 
+            animation: fadeIn 1s ease-out;
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .icon-bounce {
+            animation: iconBounce 2s infinite;
+        }
+        .text-shimmer {
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .floating-elements::before {
+            content: '💻';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+        .floating-elements::after {
+            content: '🚀';
+            position: absolute;
+            bottom: 30%;
+            right: 15%;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+            to { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8), 0 0 40px rgba(118, 75, 162, 0.4); }
+        }
+        
+        .tech-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+        }
+        .tech-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .footer-demo {
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px 12px 0 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-glass">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">Footer Components</h1>
+            <div class="flex items-center space-x-4">
+                <span id="slideCounter" class="text-sm text-gray-600">1 / 10</span>
+                <button onclick="prevSlide()" class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-300 hover:scale-110">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button onclick="nextSlide()" class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-300 hover:scale-110 pulse-glow">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Slide 1: Title -->
+    <div class="slide active gradient-bg flex-col justify-center items-center text-white">
+        <div class="floating-elements"></div>
+        <div class="text-center animate-fade-in relative z-10">
+            <h1 class="text-6xl font-black mb-6 text-shimmer">Footer Components</h1>
+            <p class="text-2xl mb-8 opacity-90">React + Radix UI + Tailwind CSS</p>
+            <div class="glass-effect px-8 py-6 rounded-2xl">
+                <p class="text-lg font-medium">Презентация: 9 - 21 июня 2025</p>
+                <p class="text-base opacity-80 mt-2">Vite + React + Supabase проект</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Agenda -->
+    <div class="slide bg-white flex-col justify-center items-center">
+        <div class="max-w-4xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">План презентации</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Теоретическая часть</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>• Важность Footer в веб-приложениях</li>
+                        <li>• Современные подходы к дизайну</li>
+                        <li>• Accessibility и UX принципы</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Практическая часть</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>• Компоненты с Radix UI</li>
+                        <li>• Responsive дизайн</li>
+                        <li>• Интеграция с существующим стеком</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Why Footer Matters -->
+    <div class="slide bg-gray-50 flex-col justify-center items-center">
+        <div class="max-w-5xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Зачем нужен качественный Footer?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-map text-blue-600 text-2xl icon-bounce"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Навигация</h3>
+                    <p class="text-gray-600">Дополнительные ссылки для быстрого доступа к важным разделам</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-balance-scale text-green-600 text-2xl icon-bounce" style="animation-delay: 0.5s;"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Доверие</h3>
+                    <p class="text-gray-600">Правовая информация, сертификаты, контакты повышают доверие</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-share-alt text-purple-600 text-2xl icon-bounce" style="animation-delay: 1s;"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Социальные связи</h3>
+                    <p class="text-gray-600">Интеграция с социальными сетями и способы связи</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Tech Stack -->
+    <div class="slide bg-gradient-to-br from-gray-900 to-gray-800 flex-col justify-center items-center text-white">
+        <div class="max-w-5xl mx-auto px-8">
+            <h2 class="text-4xl font-bold mb-12 text-center">Наш технологический стек</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="tech-card p-6 rounded-xl text-center">
+                    <i class="fab fa-react text-4xl text-blue-400 mb-4 icon-bounce"></i>
+                    <h3 class="font-semibold">React 18</h3>
+                    <p class="text-sm opacity-80">Компонентная архитектура</p>
+                </div>
+                <div class="tech-card p-6 rounded-xl text-center">
+                    <i class="fas fa-palette text-4xl text-cyan-400 mb-4 icon-bounce" style="animation-delay: 0.3s;"></i>
+                    <h3 class="font-semibold">Tailwind CSS</h3>
+                    <p class="text-sm opacity-80">Utility-first стили</p>
+                </div>
+                <div class="tech-card p-6 rounded-xl text-center">
+                    <i class="fas fa-cube text-4xl text-green-400 mb-4 icon-bounce" style="animation-delay: 0.6s;"></i>
+                    <h3 class="font-semibold">Radix UI</h3>
+                    <p class="text-sm opacity-80">Accessible компоненты</p>
+                </div>
+                <div class="tech-card p-6 rounded-xl text-center">
+                    <i class="fas fa-database text-4xl text-orange-400 mb-4 icon-bounce" style="animation-delay: 0.9s;"></i>
+                    <h3 class="font-semibold">Supabase</h3>
+                    <p class="text-sm opacity-80">Backend-as-a-Service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Footer Types -->
+    <div class="slide bg-white flex-col justify-center items-center">
+        <div class="max-w-6xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Типы Footer компонентов</h2>
+            <div class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="border border-gray-200 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-blue-600">Minimal Footer</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="h-8 bg-gray-200 rounded mb-2"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-4 bg-gray-300 rounded w-32"></div>
+                                <div class="flex space-x-2">
+                                    <div class="w-6 h-6 bg-gray-300 rounded"></div>
+                                    <div class="w-6 h-6 bg-gray-300 rounded"></div>
+                                    <div class="w-6 h-6 bg-gray-300 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">Простой footer с основной информацией и социальными ссылками</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-green-600">Rich Footer</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="grid grid-cols-3 gap-2 mb-3">
+                                <div class="h-3 bg-gray-300 rounded"></div>
+                                <div class="h-3 bg-gray-300 rounded"></div>
+                                <div class="h-3 bg-gray-300 rounded"></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mb-3">
+                                <div class="h-2 bg-gray-200 rounded"></div>
+                                <div class="h-2 bg-gray-200 rounded"></div>
+                                <div class="h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                        </div>
+                        <p class="text-gray-600">Расширенный footer с множественными секциями и ссылками</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Radix UI Components -->
+    <div class="slide bg-gradient-to-r from-purple-50 to-pink-50 flex-col justify-center items-center">
+        <div class="max-w-6xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Radix UI компоненты для Footer</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-purple-600">Accordion</h3>
+                    <p class="text-gray-600 text-sm mb-3">Для мобильной навигации и FAQ секций</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-accordion</code>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-blue-600">Separator</h3>
+                    <p class="text-gray-600 text-sm mb-3">Визуальное разделение секций</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-separator</code>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-green-600">Dialog</h3>
+                    <p class="text-gray-600 text-sm mb-3">Модальные окна для форм подписки</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-dialog</code>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-red-600">Tooltip</h3>
+                    <p class="text-gray-600 text-sm mb-3">Подсказки для иконок соцсетей</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-tooltip</code>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-yellow-600">Toast</h3>
+                    <p class="text-gray-600 text-sm mb-3">Уведомления о подписке</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-toast</code>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold mb-3 text-indigo-600">Switch</h3>
+                    <p class="text-gray-600 text-sm mb-3">Переключатель темы</p>
+                    <code class="text-xs bg-gray-100 p-2 rounded block">@radix-ui/react-switch</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Live Example -->
+    <div class="slide bg-gray-100 flex-col justify-center items-center">
+        <div class="max-w-6xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Живой пример Footer</h2>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden footer-demo">
+                <!-- Mock website content -->
+                <div class="h-40 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-black opacity-20"></div>
+                    <h3 class="text-white text-2xl font-bold relative z-10">Основной контент сайта</h3>
+                </div>
+                <!-- Footer example -->
+                <footer class="bg-gray-900 text-white">
+                    <div class="max-w-6xl mx-auto px-6 py-12">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                            <div>
+                                <h4 class="text-lg font-semibold mb-4">Компания</h4>
+                                <ul class="space-y-2 text-gray-300">
+                                    <li><a href="#" class="hover:text-white transition-colors">О нас</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">Карьера</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">Пресс-центр</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold mb-4">Продукты</h4>
+                                <ul class="space-y-2 text-gray-300">
+                                    <li><a href="#" class="hover:text-white transition-colors">Веб-приложения</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">Мобильные приложения</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold mb-4">Поддержка</h4>
+                                <ul class="space-y-2 text-gray-300">
+                                    <li><a href="#" class="hover:text-white transition-colors">Документация</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">Контакты</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold mb-4">Подписка</h4>
+                                <p class="text-gray-300 mb-4">Получайте новости о продуктах</p>
+                                <div class="flex">
+                                    <input type="email" placeholder="Email" class="flex-1 px-3 py-2 rounded-l-lg text-gray-900">
+                                    <button class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="border-gray-700 mb-6">
+                        <div class="flex flex-col md:flex-row justify-between items-center">
+                            <p class="text-gray-400 mb-4 md:mb-0">© 2025 Your Company. Все права защищены.</p>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <i class="fab fa-github text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Code Structure -->
+    <div class="slide bg-gray-900 text-white flex-col justify-center items-center">
+        <div class="max-w-6xl mx-auto px-8">
+            <h2 class="text-4xl font-bold mb-12 text-center">Структура компонентов</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold mb-4 text-green-400">Файловая структура</h3>
+                    <pre class="text-sm text-gray-300 overflow-auto">
+components/
+├── ui/
+│   ├── footer/
+│   │   ├── Footer.tsx
+│   │   ├── FooterSection.tsx
+│   │   ├── FooterLink.tsx
+│   │   └── SocialLinks.tsx
+│   └── ...
+├── layout/
+│   └── Layout.tsx
+└── ...
+                    </pre>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-400">Ключевые принципы</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mt-1 mr-3"></i>
+                            <span>Модульность и переиспользование</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mt-1 mr-3"></i>
+                            <span>TypeScript для типобезопасности</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mt-1 mr-3"></i>
+                            <span>Responsive дизайн по умолчанию</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mt-1 mr-3"></i>
+                            <span>Accessibility-first подход</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Best Practices -->
+    <div class="slide bg-white flex-col justify-center items-center">
+        <div class="max-w-6xl mx-auto px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Лучшие практики</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                    <i class="fas fa-mobile-alt text-3xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Mobile First</h3>
+                    <p class="text-gray-700">Проектирование начинаем с мобильных устройств, затем масштабируем</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                    <i class="fas fa-universal-access text-3xl text-green-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Accessibility</h3>
+                    <p class="text-gray-700">Семантическая разметка, ARIA-атрибуты, поддержка клавиатурной навигации</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                    <i class="fas fa-tachometer-alt text-3xl text-purple-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Performance</h3>
+                    <p class="text-gray-700">Lazy loading, оптимизация изображений, минификация CSS</p>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl">
+                    <i class="fas fa-shield-alt text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Security</h3>
+                    <p class="text-gray-700">Безопасная обработка ссылок, валидация форм, защита от XSS</p>
+                </div>
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl">
+                    <i class="fas fa-search text-3xl text-yellow-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">SEO</h3>
+                    <p class="text-gray-700">Структурированные данные, правильная иерархия заголовков</p>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl">
+                    <i class="fas fa-code text-3xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Clean Code</h3>
+                    <p class="text-gray-700">Читаемость, документирование, тестирование компонентов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Next Steps -->
+    <div class="slide gradient-bg flex-col justify-center items-center text-white">
+        <div class="max-w-5xl mx-auto px-8 text-center">
+            <h2 class="text-4xl font-bold mb-8">Следующие шаги</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="glass-effect p-8 rounded-xl">
+                    <h3 class="text-2xl font-semibold mb-4">Ближайшие задачи</h3>
+                    <ul class="text-left space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-calendar-check mr-3 text-green-400"></i>
+                            Создание базового Footer компонента
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-mobile-alt mr-3 text-blue-400"></i>
+                            Адаптация под мобильные устройства
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-palette mr-3 text-purple-400"></i>
+                            Интеграция с дизайн-системой
+                        </li>
+                    </ul>
+                </div>
+                <div class="glass-effect p-8 rounded-xl">
+                    <h3 class="text-2xl font-semibold mb-4">Долгосрочные цели</h3>
+                    <ul class="text-left space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-chart-line mr-3 text-yellow-400"></i>
+                            A/B тестирование вариантов
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-globe mr-3 text-cyan-400"></i>
+                            Многоязычная поддержка
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-cogs mr-3 text-orange-400"></i>
+                            Автоматизация развертывания
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center">
+                <p class="text-xl mb-4">Спасибо за внимание!</p>
+                <p class="opacity-80">Вопросы и обсуждение</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            updateCounter();
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        updateCounter();
+    </script>
+</body>
+</html>
