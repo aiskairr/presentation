@@ -1,290 +1,338 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Footer Components - Практика</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden;
-        }
-        .slide { 
-            min-height: 100vh; 
-            display: none; 
-            position: relative;
-            overflow: hidden;
-        }
-        .slide.active { 
-            display: flex; 
-            animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .gradient-bg { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
-        }
-        .glass-effect { 
-            backdrop-filter: blur(20px); 
-            background: rgba(255, 255, 255, 0.15); 
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        .nav-glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Порождающие паттерны (Java) — кибер-презентация ч/б</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0a; --fg:#ffffff; --muted:#bdbdbd; --accent:#ffffff;
+      --grid:#1a1a1a; --card:#0f0f0f; --shadow: 0 10px 40px rgba(255,255,255,.05);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background: radial-gradient(1200px 800px at 50% 10%, #111 0%, var(--bg) 60%);
+      color:var(--fg); font-family:"Orbitron",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      letter-spacing:.2px; overflow:hidden;
+    }
+    body::before{
+      content:""; position:fixed; inset:0;
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size:32px 32px,32px 32px;
+      mask-image: radial-gradient(ellipse at center, rgba(255,255,255,.25), transparent 60%);
+      pointer-events:none;
+    }
+    .deck{position:relative; height:100dvh; width:100vw; display:flex; align-items:center; justify-content:center; padding:48px;}
+    .slide{
+      position:absolute; inset:48px; margin:auto; width:min(1100px, 100%); height:min(720px, calc(100% - 96px));
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.12); border-radius:24px; box-shadow:var(--shadow);
+      padding:48px 56px; display:none; overflow:hidden;
+    }
+    .slide.active{display:block}
+    .slide::before,.slide::after{
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:.35;
+      background:
+        linear-gradient(90deg, var(--accent), transparent) top left/120px 2px no-repeat,
+        linear-gradient(180deg, var(--accent), transparent) top left/2px 120px no-repeat,
+        linear-gradient(-90deg, var(--accent), transparent) top right/120px 2px no-repeat,
+        linear-gradient(180deg, var(--accent), transparent) top right/2px 120px no-repeat,
+        linear-gradient(90deg, var(--accent), transparent) bottom left/120px 2px no-repeat,
+        linear-gradient(-180deg, var(--accent), transparent) bottom left/2px 120px no-repeat,
+        linear-gradient(-90deg, var(--accent), transparent) bottom right/120px 2px no-repeat,
+        linear-gradient(-180deg, var(--accent), transparent) bottom right/2px 120px no-repeat;
+    }
+    .slide::after{background: radial-gradient(600px 100px at 50% 0%, rgba(255,255,255,.08), transparent); opacity:.8}
+    h1,h2,h3{margin:0 0 16px 0}
+    h1{font-size:clamp(28px,5vw,56px); line-height:1.05; letter-spacing:1px; text-transform:uppercase}
+    h2{font-size:clamp(22px,3.2vw,32px); text-transform:uppercase; letter-spacing:.6px}
+    p,li{color:var(--fg); font-size:clamp(16px,1.6vw,20px); line-height:1.55}
+    .muted{color:var(--muted)}
+    .hr{height:1px; background:linear-gradient(90deg, rgba(255,255,255,.35), rgba(255,255,255,0)); margin:18px 0 22px;}
+    .fade-in{opacity:0; transform:translateY(12px)}
+    .fade-in.visible{animation:fadeUp .7s ease forwards}
+    @keyframes fadeUp{to{opacity:1; transform:none}}
+    .scanline{position:relative; overflow:hidden}
+    .scanline::after{
+      content:""; position:absolute; left:0; right:0; top:-100%; height:120%;
+      background:linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,.06) 10%, rgba(255,255,255,0) 20%);
+      animation:scan 4s linear infinite; pointer-events:none;
+    }
+    @keyframes scan{to{top:100%}}
+    .type{border-right:2px solid var(--fg); white-space:nowrap; overflow:hidden; width:0ch}
+    .type.visible{animation:typing 2.8s steps(40,end) forwards, caret 1s step-end infinite}
+    @keyframes typing{to{width:100%}} @keyframes caret{50%{border-color:transparent}}
+    .bullets li{opacity:0; transform:translateY(8px)}
+    .bullets li.visible{animation:fadeUp .5s ease forwards}
+    .bullets li:nth-child(2).visible{animation-delay:.08s}
+    .bullets li:nth-child(3).visible{animation-delay:.16s}
+    .bullets li:nth-child(4).visible{animation-delay:.24s}
+    .bullets li:nth-child(5).visible{animation-delay:.32s}
+    .footer{position:absolute; bottom:18px; left:32px; right:32px; display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:12px; letter-spacing:.6px; text-transform:uppercase}
+    .progress{height:2px; background:#222; border-radius:2px; overflow:hidden; width:40%}
+    .progress>i{display:block; height:100%; width:0%; background:#fff}
+    .kbd{display:inline-block; padding:4px 8px; border:1px solid rgba(255,255,255,.35); border-radius:8px; font-size:12px; letter-spacing:.6px; text-transform:uppercase; margin-left:6px}
+    .grid-2{display:grid; grid-template-columns:1.1fr .9fr; gap:24px}
+    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:18px 20px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; font-size:.95em}
+    pre{white-space:pre; overflow:auto; margin:0}
+    .tag{font-size:12px; padding:6px 10px; border:1px solid rgba(255,255,255,.3); border-radius:999px; text-transform:uppercase; letter-spacing:.6px; display:inline-block}
+    .tags{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 0}
+  </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 nav-glass">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-gray-800">Footer Components - Практика</h1>
-            <div class="flex items-center space-x-4">
-                <span id="slideCounter" class="text-sm text-gray-600">1 / 7</span>
-                <button onclick="prevSlide()" class="p-2 hover:bg-gray-100 rounded-lg transition-all">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button onclick="nextSlide()" class="p-2 hover:bg-gray-100 rounded-lg transition-all">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+<body>
+  <div class="deck" id="deck">
+    <!-- 1 -->
+    <section class="slide active scanline">
+      <h1 class="type" data-animate="type">Порождающие паттерны (Java)</h1>
+      <div class="hr"></div>
+      <h2 class="fade-in" data-animate="fade">Гибкое создание объектов без лишних зависимостей</h2>
+      <p class="muted fade-in" data-animate="fade">Чёрно-белая кибер-эстетика. Навигация: стрелки ← → или клик.</p>
+      <div class="footer">
+        <span>Управление:<span class="kbd">←</span><span class="kbd">→</span><span class="kbd">Space</span></span>
+        <div class="progress"><i id="progress"></i></div>
+        <span id="counter">1 / 9</span>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Зачем нужны порождающие паттерны?</h2>
+      <ul class="bullets" style="margin-top:12px">
+        <li>Отделяют логику создания от использования (SRP)</li>
+        <li>Снижают связность, скрывают сложную инициализацию</li>
+        <li>Позволяют подменять семейства объектов конфигурацией</li>
+        <li>Упрощают тестирование (внедрение зависимостей, моки)</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Encapsulation</span><span class="tag">Low Coupling</span><span class="tag">Extensibility</span>
+      </div>
+      <div class="footer"><span>Идея: «создание» — отдельная ответственность</span><div class="progress"><i></i></div><span></span></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Классика (GoF) для Java</h2>
+      <div class="grid-2" style="margin-top:10px">
+        <div class="card">
+          <ul class="bullets">
+            <li>Singleton (Одиночка)</li>
+            <li>Factory Method (Фабричный метод)</li>
+            <li>Abstract Factory (Абстрактная фабрика)</li>
+          </ul>
         </div>
-    </nav>
-
-    <!-- Slide 1: Титульный слайд -->
-    <div class="slide active gradient-bg flex-col justify-center items-center text-white">
-        <div class="text-center relative z-10">
-            <h1 class="text-5xl font-black mb-6">Footer Components</h1>
-            <p class="text-xl mb-6">Практика в ОсОО "Император строй"</p>
-            <div class="glass-effect px-8 py-6 rounded-2xl">
-                <p class="text-lg font-medium">Маджитова Латифа</p>
-                <p class="text-base opacity-80 mt-2">React + Tailwind CSS + Radix UI</p>
-            </div>
+        <div class="card">
+          <ul class="bullets">
+            <li>Builder (Строитель)</li>
+            <li>Prototype (Прототип)</li>
+            <li class="muted">+ Object Pool (по ситуации)</li>
+          </ul>
         </div>
-    </div>
+      </div>
+      <div class="footer"><span>Дальше — каждый с мини-анимацией</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-    <!-- Slide 2: Что такое Footer и зачем он нужен -->
-    <div class="slide bg-white flex-col justify-center items-center">
-        <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Что такое Footer?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-blue-50 p-6 rounded-xl text-center">
-                    <i class="fas fa-info-circle text-4xl text-blue-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Информация</h3>
-                    <p class="text-gray-600">Контакты, адреса, правовая информация</p>
-                </div>
-                <div class="bg-green-50 p-6 rounded-xl text-center">
-                    <i class="fas fa-sitemap text-4xl text-green-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Навигация</h3>
-                    <p class="text-gray-600">Дополнительные ссылки на важные разделы</p>
-                </div>
-                <div class="bg-purple-50 p-6 rounded-xl text-center">
-                    <i class="fas fa-heart text-4xl text-purple-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Доверие</h3>
-                    <p class="text-gray-600">Социальные сети, сертификаты, отзывы</p>
-                </div>
-            </div>
+    <!-- 4 Singleton -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Singleton</h2>
+      <div class="grid-2" style="margin-top:6px">
+        <div>
+          <p class="muted">Один экземпляр класса и глобальная точка доступа.</p>
+          <ul class="bullets">
+            <li>Подходит для конфигов, кэшей, пулов соединений</li>
+            <li>Осторожно: может мешать тестированию</li>
+          </ul>
         </div>
-    </div>
-
-    <!-- Slide 3: Мой Footer для ОсОО "Император строй" -->
-    <div class="slide bg-gray-100 flex-col justify-center items-center">
-        <div class="max-w-6xl mx-auto px-8">
-            <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Footer для ОсОО "Император строй"</h2>
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <!-- Mock website content -->
-                <div class="h-32 bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center">
-                    <h3 class="text-white text-xl font-bold">Сайт компании "Император строй"</h3>
-                </div>
-                <!-- Footer example based on the image -->
-                <footer class="bg-gray-900 text-white">
-                    <div class="max-w-6xl mx-auto px-6 py-8">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
-                            <div>
-                                <h4 class="font-semibold mb-3 text-orange-400">О компании</h4>
-                                <ul class="space-y-1 text-gray-300">
-                                    <li><a href="#" class="hover:text-white">Главная</a></li>
-                                    <li><a href="#" class="hover:text-white">О нас</a></li>
-                                    <li><a href="#" class="hover:text-white">Доставка и оплата</a></li>
-                                    <li><a href="#" class="hover:text-white">Администрирование</a></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-3 text-orange-400">Каталог</h4>
-                                <ul class="space-y-1 text-gray-300">
-                                    <li><a href="#" class="hover:text-white">Встроенная техника</a></li>
-                                    <li><a href="#" class="hover:text-white">Климатическая техника</a></li>
-                                    <li><a href="#" class="hover:text-white">Красота и уход</a></li>
-                                    <li><a href="#" class="hover:text-white">Мелкая бытовая техника</a></li>
-                                    <li><a href="#" class="hover:text-white">Смартфоны и Планшеты</a></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-3 text-orange-400">Покупателям</h4>
-                                <ul class="space-y-1 text-gray-300">
-                                    <li><a href="#" class="hover:text-white">Кредит и рассрочка</a></li>
-                                    <li><a href="#" class="hover:text-white">Вопросы и ответы</a></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-3 text-orange-400">Контакты</h4>
-                                <ul class="space-y-1 text-gray-300 text-xs">
-                                    <li><i class="fas fa-phone mr-2"></i>Беш Сары: +996 707 030 575</li>
-                                    <li><i class="fas fa-phone mr-2"></i>Ало Гранд: +996 999 160 976</li>
-                                    <li><i class="fas fa-envelope mr-2"></i>belektehnika@gmail.com</li>
-                                    <li><i class="fas fa-map-marker mr-2"></i>Ошский рынок — ул. Байшеналиевой, 42</li>
-                                    <li><i class="fas fa-map-marker mr-2"></i>АЮ GRAND — Валиханова 2 стВ, 1 этаж, 101/1</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700 my-6">
-                        <div class="text-center text-gray-400 text-sm">
-                            <p>© 2023 Белек Техника. Все права защищены.</p>
-                        </div>
-                    </div>
-                </footer>
-            </div>
+        <div class="card mono">
+<pre>public final class Config {
+  private static volatile Config instance;
+  private Config() {}
+  public static Config getInstance() {
+    if (instance == null) {
+      synchronized (Config.class) {
+        if (instance == null) instance = new Config(); // DCL
+      }
+    }
+    return instance;
+  }
+}</pre>
         </div>
-    </div>
+      </div>
+      <div class="footer"><span>Java: потокобезопасный DCL</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-    <!-- Slide 4: Технологии -->
-    <div class="slide bg-gray-900 text-white flex-col justify-center items-center">
-        <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-4xl font-bold mb-12 text-center">Технологии, которые я использовала</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-800 p-6 rounded-xl text-center">
-                    <i class="fab fa-react text-4xl text-blue-400 mb-4"></i>
-                    <h3 class="font-semibold text-xl mb-2">React</h3>
-                    <p class="text-gray-300">Создание интерактивных компонентов</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-xl text-center">
-                    <i class="fas fa-palette text-4xl text-cyan-400 mb-4"></i>
-                    <h3 class="font-semibold text-xl mb-2">Tailwind CSS</h3>
-                    <p class="text-gray-300">Быстрая стилизация компонентов</p>
-                </div>
-                <div class="bg-gray-800 p-6 rounded-xl text-center">
-                    <i class="fas fa-cube text-4xl text-green-400 mb-4"></i>
-                    <h3 class="font-semibold text-xl mb-2">Radix UI</h3>
-                    <p class="text-gray-300">Доступные UI компоненты</p>
-                </div>
-            </div>
+    <!-- 5 Factory Method -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Factory Method</h2>
+      <div class="grid-2" style="margin-top:6px">
+        <div>
+          <p class="muted">Создание делегируется подклассам через фабричный метод.</p>
+          <ul class="bullets">
+            <li>Полиморфизм вместо switch/if по типам</li>
+            <li>Новые продукты без изменения клиента</li>
+          </ul>
         </div>
-    </div>
-
-    <!-- Slide 5: Структура компонента -->
-    <div class="slide bg-white flex-col justify-center items-center">
-        <div class="max-w-6xl mx-auto px-8">
-            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Как я строила Footer</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-gray-50 p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-4 text-blue-600">Структура файлов</h3>
-                    <pre class="text-sm text-gray-700 bg-white p-4 rounded">
-components/
-├── Footer.jsx
-├── FooterSection.jsx
-├── FooterLink.jsx
-└── ContactInfo.jsx
-                    </pre>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-4 text-green-600">Основные принципы</h3>
-                    <ul class="space-y-2 text-gray-700">
-                        <li>✓ Модульность - каждая секция отдельно</li>
-                        <li>✓ Адаптивность - работает на всех устройствах</li>
-                        <li>✓ Удобство - простая навигация</li>
-                        <li>✓ Читаемость - четкая структура кода</li>
-                    </ul>
-                </div>
-            </div>
+        <div class="card mono">
+<pre>interface Button { void onClick(); }
+abstract class Dialog {
+  protected abstract Button createButton();
+  public void render() {
+    Button b = createButton();
+    b.onClick();
+  }
+}
+class WebDialog extends Dialog {
+  @Override protected Button createButton() { return () -> System.out.println("Web"); }
+}</pre>
         </div>
-    </div>
+      </div>
+      <div class="footer"><span>Клиент знает интерфейс, не знает конкретику</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-    <!-- Slide 6: Что я изучила -->
-    <div class="slide bg-blue-50 flex-col justify-center items-center">
-        <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Что я изучила во время практики</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-semibold mb-4 text-purple-600">Технические навыки</h3>
-                    <ul class="space-y-2 text-gray-700">
-                        <li>• Работа с React компонентами</li>
-                        <li>• Создание адаптивного дизайна</li>
-                        <li>• Использование Tailwind CSS</li>
-                        <li>• Интеграция с Radix UI</li>
-                    </ul>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-semibold mb-4 text-orange-600">Практические навыки</h3>
-                    <ul class="space-y-2 text-gray-700">
-                        <li>• Работа в команде</li>
-                        <li>• Понимание бизнес-требований</li>
-                        <li>• Создание пользовательских интерфейсов</li>
-                        <li>• Тестирование на разных устройствах</li>
-                    </ul>
-                </div>
-            </div>
+    <!-- 6 Abstract Factory -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Abstract Factory</h2>
+      <div class="grid-2" style="margin-top:6px">
+        <div>
+          <p class="muted">Создание согласованных семейств объектов.</p>
+          <ul class="bullets">
+            <li>Совместимость «кнопка+чекбокс» в одном стиле</li>
+            <li>Переключение тем/платформ конфигурацией</li>
+          </ul>
         </div>
-    </div>
-
-    <!-- Slide 7: Заключение -->
-    <div class="slide gradient-bg flex-col justify-center items-center text-white">
-        <div class="max-w-4xl mx-auto px-8 text-center">
-            <h2 class="text-4xl font-bold mb-8">Результаты практики</h2>
-            <div class="glass-effect p-8 rounded-xl mb-8">
-                <h3 class="text-2xl font-semibold mb-4">Что удалось сделать:</h3>
-                <ul class="text-left space-y-3 text-lg">
-                    <li>✓ Создала полноценный Footer для сайта компании</li>
-                    <li>✓ Изучила современные веб-технологии</li>
-                    <li>✓ Получила опыт работы в IT-компании</li>
-                    <li>✓ Научилась создавать удобные интерфейсы</li>
-                </ul>
-            </div>
-            <p class="text-xl">Спасибо за внимание!</p>
+        <div class="card mono">
+<pre>interface Button { }
+interface Checkbox { }
+interface UIFactory {
+  Button createButton();
+  Checkbox createCheckbox();
+}
+class WinFactory implements UIFactory {
+  public Button createButton(){ return new WinButton(); }
+  public Checkbox createCheckbox(){ return new WinCheckbox(); }
+}</pre>
         </div>
-    </div>
+      </div>
+      <div class="footer"><span>Одна точка — разные «семейства» UI</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+    <!-- 7 Builder -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Builder</h2>
+      <div class="grid-2" style="margin-top:6px">
+        <div>
+          <p class="muted">Пошаговая сборка сложного объекта с разными представлениями.</p>
+          <ul class="bullets">
+            <li>Чистая конфигурация через fluent-интерфейс</li>
+            <li>Директор может собирать пресеты</li>
+          </ul>
+        </div>
+        <div class="card mono">
+<pre>public class Report {
+  private final String title, section;
+  private Report(Builder b){ this.title=b.title; this.section=b.section; }
+  public static class Builder{
+    private String title, section;
+    public Builder title(String v){ this.title=v; return this; }
+    public Builder section(String v){ this.section=v; return this; }
+    public Report build(){ return new Report(this); }
+  }
+}
+Report r = new Report.Builder().title("Статистика").section("Продажи").build();</pre>
+        </div>
+      </div>
+      <div class="footer"><span>Избавляемся от «большого конструктора»</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-        function showSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (n + totalSlides) % totalSlides;
-            slides[currentSlide].classList.add('active');
-            updateCounter();
-        }
+    <!-- 8 Prototype -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Prototype</h2>
+      <div class="grid-2" style="margin-top:6px">
+        <div>
+          <p class="muted">Клонирование готового образца вместо создания с нуля.</p>
+          <ul class="bullets">
+            <li>Быстрое копирование сложной конфигурации</li>
+            <li>Важна «глубина» копии (deep/shallow)</li>
+          </ul>
+        </div>
+        <div class="card mono">
+<pre>class Enemy implements Cloneable {
+  int hp; String ai;
+  Enemy(int hp, String ai){ this.hp=hp; this.ai=ai; }
+  @Override protected Enemy clone() {
+    try { return (Enemy) super.clone(); } catch (CloneNotSupportedException e){ throw new AssertionError(e); }
+  }
+}
+Enemy tpl = new Enemy(100, "melee");
+Enemy e1 = tpl.clone(); e1.hp = 120;</pre>
+        </div>
+      </div>
+      <div class="footer"><span>clone(): быстро и предсказуемо</span><div class="progress"><i></i></div><span></span></div>
+    </section>
 
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
+    <!-- 9 Выбор -->
+    <section class="slide">
+      <h2 class="fade-in" data-animate="fade">Как выбрать?</h2>
+      <div class="grid-2" style="margin-top:8px">
+        <div class="card">
+          <ul class="bullets">
+            <li>Один экземпляр → <b>Singleton</b></li>
+            <li>Точка расширения типа → <b>Factory Method</b></li>
+            <li>Семейства совместимых объектов → <b>Abstract Factory</b></li>
+            <li>Пошаговая сборка → <b>Builder</b></li>
+            <li>Копирование настроек → <b>Prototype</b></li>
+          </ul>
+        </div>
+        <div class="card">
+          <p class="muted">Принцип:</p>
+          <p><b>Спрячьте детали создания — держите низкую связность.</b></p>
+          <p class="muted">Тогда система легко расширяется без переписывания клиента.</p>
+        </div>
+      </div>
+      <div class="footer"><span>Java-фокус: интерфейсы, абстрактные классы, clone(), Builder</span><div class="progress"><i></i></div><span></span></div>
+    </section>
+  </div>
 
-        function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-
-        function updateCounter() {
-            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight' || event.key === ' ') {
-                nextSlide();
-            } else if (event.key === 'ArrowLeft') {
-                prevSlide();
-            }
+  <script>
+    (function(){
+      const deck = document.getElementById('deck');
+      const slides = Array.from(deck.querySelectorAll('.slide'));
+      let index = 0;
+      function clamp(i){ return Math.max(0, Math.min(slides.length-1, i)); }
+      function setActive(i){
+        index = clamp(i);
+        slides.forEach((s, idx) => s.classList.toggle('active', idx === index));
+        triggerAnimations(slides[index]); updateFooter();
+      }
+      function triggerAnimations(slide){
+        const animatables = slide.querySelectorAll('[data-animate], .bullets li');
+        animatables.forEach(el => {
+          el.classList.remove('visible'); void el.offsetWidth;
+          const kind = el.dataset.animate;
+          if(kind === 'type'){ el.classList.add('type','visible'); }
+          else if(kind === 'fade'){ el.classList.add('.fade-in'); el.classList.add('fade-in','visible'); }
+          if(el.tagName === 'LI'){ el.classList.add('visible'); }
         });
-
-        updateCounter();
-    </script>
+      }
+      function updateFooter(){
+        const bars = slides[index].querySelectorAll('.progress > i');
+        bars.forEach(b => b.style.width = ((index+1)/slides.length*100).toFixed(2)+'%');
+        const counter = document.getElementById('counter'); if(counter){ counter.textContent = (index+1)+' / '+slides.length; }
+        const global = document.getElementById('progress'); if(global){ global.style.width = ((index+1)/slides.length*100).toFixed(2)+'%'; }
+      }
+      window.addEventListener('keydown', e=>{
+        if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); setActive(index+1); }
+        if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); setActive(index-1); }
+        if(e.key==='Home'){ e.preventDefault(); setActive(0); }
+        if(e.key==='End'){ e.preventDefault(); setActive(slides.length-1); }
+      });
+      window.addEventListener('click', ()=> setActive(index+1));
+      setActive(0);
+    })();
+  </script>
 </body>
 </html>
